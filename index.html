@@ -1,0 +1,1809 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta
+  name="viewport"
+  content="
+    width=device-width,
+    initial-scale=1.0,
+    maximum-scale=1.0,
+    user-scalable=no
+  "
+>
+
+<title>Аура 67</title>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<style>
+
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+
+  -webkit-tap-highlight-color:
+  transparent;
+}
+
+body{
+
+  background:
+  linear-gradient(
+    180deg,
+    #09090f,
+    #120f1f,
+    #181028
+  );
+
+  color:white;
+
+  font-family:
+  Arial,
+  sans-serif;
+
+  min-height:100vh;
+
+  overflow-x:hidden;
+
+  padding-bottom:120px;
+}
+
+.hidden{
+  display:none!important;
+}
+
+.glass{
+
+  background:
+  rgba(255,255,255,.06);
+
+  backdrop-filter:blur(18px);
+
+  border:
+  1px solid
+  rgba(255,255,255,.08);
+
+  box-shadow:
+  0 10px 30px
+  rgba(0,0,0,.35);
+}
+
+.card:active{
+  transform:scale(.96);
+}
+
+.tab-active{
+
+  background:
+  rgba(255,255,255,.14)!important;
+}
+
+.main-wrap{
+
+  width:100%;
+
+  max-width:520px;
+
+  margin:auto;
+
+  padding:18px;
+}
+
+.aura-number{
+
+  font-size:88px;
+
+  font-weight:900;
+
+  text-align:center;
+
+  margin-top:10px;
+
+  color:#c084fc;
+
+  text-shadow:
+  0 0 30px
+  rgba(192,132,252,.7);
+}
+
+.status{
+
+  text-align:center;
+
+  opacity:.7;
+
+  margin-top:6px;
+
+  margin-bottom:26px;
+}
+
+.quick-grid{
+
+  display:grid;
+
+  grid-template-columns:
+  repeat(2,1fr);
+
+  gap:12px;
+}
+
+.bottom-nav{
+
+  position:fixed;
+
+  bottom:18px;
+
+  left:50%;
+
+  transform:translateX(-50%);
+
+  width:95%;
+
+  max-width:520px;
+
+  display:flex;
+
+  justify-content:space-between;
+
+  padding:12px;
+
+  border-radius:28px;
+
+  z-index:100;
+}
+
+.chart-box{
+
+  height:300px;
+}
+
+.history-item{
+
+  padding:14px;
+
+  border-radius:18px;
+
+  margin-bottom:10px;
+
+  display:flex;
+
+  justify-content:space-between;
+
+  align-items:center;
+}
+
+.avatar-grid{
+
+  display:grid;
+
+  grid-template-columns:
+  repeat(4,1fr);
+
+  gap:12px;
+}
+
+.avatar-btn{
+
+  width:62px;
+  height:62px;
+
+  border-radius:18px;
+
+  font-size:30px;
+
+  border:none;
+
+  background:
+  rgba(255,255,255,.06);
+
+  color:white;
+}
+
+.selected-avatar{
+
+  border:
+  2px solid #facc15;
+}
+
+.modal{
+
+  position:fixed;
+
+  inset:0;
+
+  background:
+  rgba(0,0,0,.72);
+
+  display:flex;
+
+  align-items:center;
+
+  justify-content:center;
+
+  z-index:999;
+}
+
+.modal-box{
+
+  width:92%;
+
+  max-width:420px;
+
+  padding:22px;
+
+  border-radius:28px;
+}
+
+input{
+
+  width:100%;
+
+  border:none;
+
+  outline:none;
+
+  padding:16px;
+
+  border-radius:18px;
+
+  background:
+  rgba(255,255,255,.08);
+
+  color:white;
+
+  font-size:16px;
+}
+
+button{
+  border:none;
+  outline:none;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="main-wrap">
+
+<div
+  class="glass"
+  style="
+    padding:18px;
+    border-radius:28px;
+    margin-bottom:18px;
+  "
+>
+
+<div
+  style="
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+  "
+>
+
+<div
+  style="
+    display:flex;
+    align-items:center;
+    gap:12px;
+  "
+>
+
+<div
+  id="header-avatar"
+  class="glass"
+  style="
+    width:54px;
+    height:54px;
+
+    border-radius:50%;
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    font-size:28px;
+  "
+>
+
+🐱
+
+</div>
+
+<div>
+
+<div
+  id="header-name"
+  style="
+    font-weight:700;
+    font-size:18px;
+  "
+>
+
+Гость
+
+</div>
+
+<div
+  style="
+    opacity:.6;
+    font-size:13px;
+  "
+>
+
+Серия:
+<span id="header-streak">
+
+1
+
+</span>
+
+дн.
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+<div class="aura-number" id="aura">
+
+0
+
+</div>
+
+<div class="status" id="status">
+
+⚡ Пустая
+
+</div>
+
+</div>
+<!-- MAIN -->
+
+<div id="view-main">
+
+<div
+  class="glass"
+  style="
+    padding:18px;
+    border-radius:28px;
+    margin-bottom:18px;
+  "
+>
+
+<div
+  style="
+    font-size:22px;
+    font-weight:800;
+    margin-bottom:14px;
+  "
+>
+
+⚡ Быстрые действия
+
+</div>
+
+<div
+  id="quick"
+  class="quick-grid"
+></div>
+
+</div>
+
+<div
+  class="glass"
+  style="
+    padding:18px;
+    border-radius:28px;
+    margin-bottom:18px;
+  "
+>
+
+<input
+  id="input"
+  placeholder="Введите действие..."
+>
+
+<button
+  onclick="handleAddAction()"
+  class="card"
+  style="
+    width:100%;
+
+    margin-top:14px;
+
+    padding:16px;
+
+    border-radius:20px;
+
+    background:
+    linear-gradient(
+      90deg,
+      #facc15,
+      #a855f7
+    );
+
+    color:black;
+
+    font-weight:900;
+
+    font-size:17px;
+  "
+>
+
+✨ Добавить
+
+</button>
+
+</div>
+
+<div
+  style="
+    display:flex;
+    gap:12px;
+    margin-bottom:18px;
+  "
+>
+
+<button
+  onclick="resetAura()"
+  class="card"
+  style="
+    flex:1;
+
+    padding:16px;
+
+    border-radius:20px;
+
+    background:
+    rgba(251,146,60,.2);
+
+    color:#fdba74;
+
+    font-weight:700;
+  "
+>
+
+♻ Сбросить ауру
+
+</button>
+
+<button
+  onclick="resetAll()"
+  class="card"
+  style="
+    flex:1;
+
+    padding:16px;
+
+    border-radius:20px;
+
+    background:
+    rgba(239,68,68,.2);
+
+    color:#fca5a5;
+
+    font-weight:700;
+  "
+>
+
+💀 Сбросить всё
+
+</button>
+
+</div>
+
+</div>
+
+<!-- PROFILE MODAL -->
+
+<div
+  id="profile-modal"
+  class="modal hidden"
+>
+
+<div
+  class="
+    glass
+    modal-box
+  "
+>
+
+<div
+  style="
+    text-align:center;
+    font-size:26px;
+    font-weight:900;
+    margin-bottom:18px;
+  "
+>
+
+👤 Профиль
+
+</div>
+
+<input
+  id="profile-name-input"
+  placeholder="Введите имя"
+  style="margin-bottom:18px;"
+>
+
+<div
+  id="avatar-grid"
+  class="avatar-grid"
+  style="margin-bottom:18px;"
+></div>
+
+<button
+  onclick="saveProfile()"
+  class="card"
+  style="
+    width:100%;
+
+    padding:16px;
+
+    border-radius:20px;
+
+    background:
+    linear-gradient(
+      90deg,
+      #facc15,
+      #a855f7
+    );
+
+    color:black;
+
+    font-weight:900;
+
+    margin-bottom:10px;
+  "
+>
+
+💾 Сохранить
+
+</button>
+
+<button
+  onclick="closeProfileModal()"
+  class="card"
+  style="
+    width:100%;
+
+    padding:14px;
+
+    border-radius:20px;
+
+    background:
+    rgba(255,255,255,.08);
+
+    color:white;
+  "
+>
+
+Закрыть
+
+</button>
+
+</div>
+
+</div>
+<!-- HISTORY -->
+
+<div
+  id="view-history"
+  class="hidden"
+>
+
+<div
+  class="glass"
+  style="
+    padding:18px;
+    border-radius:28px;
+    margin-bottom:18px;
+  "
+>
+
+<div
+  style="
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:14px;
+  "
+>
+
+<div
+  style="
+    font-size:22px;
+    font-weight:800;
+  "
+>
+
+📜 История
+
+</div>
+
+<button
+  onclick="clearHistory()"
+  class="card"
+  style="
+    padding:10px 14px;
+
+    border-radius:14px;
+
+    background:
+    rgba(239,68,68,.2);
+
+    color:#fca5a5;
+
+    font-weight:700;
+  "
+>
+
+🗑 Очистить
+
+</button>
+
+</div>
+
+<div id="history-list"></div>
+
+</div>
+
+</div>
+
+<!-- ACHIEVEMENTS -->
+
+<div
+  id="view-achievements"
+  class="hidden"
+>
+
+<div
+  class="glass"
+  style="
+    padding:18px;
+    border-radius:28px;
+    margin-bottom:18px;
+  "
+>
+
+<div
+  style="
+    font-size:22px;
+    font-weight:800;
+    margin-bottom:14px;
+  "
+>
+
+🏆 Достижения
+
+</div>
+
+<div id="achievements-list"></div>
+
+</div>
+
+</div>
+
+<!-- CHART -->
+
+<div
+  id="view-chart"
+  class="hidden"
+>
+
+<div
+  class="glass"
+  style="
+    padding:18px;
+    border-radius:28px;
+  "
+>
+
+<div
+  style="
+    font-size:22px;
+    font-weight:800;
+    margin-bottom:14px;
+  "
+>
+
+📈 График ауры
+
+</div>
+
+<div class="chart-box">
+
+<canvas id="chart"></canvas>
+
+</div>
+
+</div>
+
+</div>
+
+<!-- PROFILE -->
+
+<div
+  id="view-profile"
+  class="hidden"
+>
+
+<div
+  class="glass"
+  style="
+    padding:20px;
+    border-radius:28px;
+    text-align:center;
+    margin-bottom:18px;
+  "
+>
+
+<div
+  id="profile-avatar-big"
+  style="
+    font-size:68px;
+    margin-bottom:12px;
+  "
+>
+
+🐱
+
+</div>
+
+<div
+  id="profile-name-big"
+  style="
+    font-size:24px;
+    font-weight:900;
+    margin-bottom:8px;
+  "
+>
+
+Гость
+
+</div>
+
+<button
+  onclick="openProfileModal()"
+  class="card"
+  style="
+    padding:14px 18px;
+
+    border-radius:18px;
+
+    background:
+    rgba(255,255,255,.08);
+
+    color:white;
+
+    font-weight:700;
+  "
+>
+
+✏ Изменить профиль
+
+</button>
+
+</div>
+<div
+  class="glass"
+  style="
+    padding:20px;
+    border-radius:28px;
+    margin-bottom:18px;
+  "
+>
+
+<div
+  style="
+    font-size:22px;
+    font-weight:800;
+    margin-bottom:16px;
+  "
+>
+
+⚙ Настройки
+
+</div>
+
+<div
+  style="
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:14px;
+  "
+>
+
+<div>🔊 Звуки</div>
+
+<button
+  onclick="toggleSound()"
+  id="sound-btn"
+  class="card"
+  style="
+    padding:12px 18px;
+
+    border-radius:16px;
+
+    background:
+    rgba(34,197,94,.2);
+
+    color:#86efac;
+
+    font-weight:700;
+  "
+>
+
+ON
+
+</button>
+
+</div>
+
+<div
+  style="
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+  "
+>
+
+<div>📳 Вибрация</div>
+
+<button
+  onclick="toggleVibration()"
+  id="vibration-btn"
+  class="card"
+  style="
+    padding:12px 18px;
+
+    border-radius:16px;
+
+    background:
+    rgba(34,197,94,.2);
+
+    color:#86efac;
+
+    font-weight:700;
+  "
+>
+
+ON
+
+</button>
+
+</div>
+
+</div>
+
+</div>
+
+<!-- BOTTOM NAV -->
+
+<div
+  class="
+    glass
+    bottom-nav
+  "
+>
+
+<button
+  onclick="switchTab('main')"
+  class="card"
+  style="
+    flex:1;
+
+    padding:14px;
+
+    border-radius:18px;
+
+    color:white;
+  "
+  id="tab-main"
+>
+
+🏠
+
+</button>
+
+<button
+  onclick="switchTab('history')"
+  class="card"
+  style="
+    flex:1;
+
+    padding:14px;
+
+    border-radius:18px;
+
+    color:white;
+  "
+  id="tab-history"
+>
+
+📜
+
+</button>
+
+<button
+  onclick="switchTab('achievements')"
+  class="card"
+  style="
+    flex:1;
+
+    padding:14px;
+
+    border-radius:18px;
+
+    color:white;
+  "
+  id="tab-achievements"
+>
+
+🏆
+
+</button>
+
+<button
+  onclick="switchTab('chart')"
+  class="card"
+  style="
+    flex:1;
+
+    padding:14px;
+
+    border-radius:18px;
+
+    color:white;
+  "
+  id="tab-chart"
+>
+
+📈
+
+</button>
+
+<button
+  onclick="switchTab('profile')"
+  class="card"
+  style="
+    flex:1;
+
+    padding:14px;
+
+    border-radius:18px;
+
+    color:white;
+  "
+  id="tab-profile"
+>
+
+👤
+
+</button>
+
+</div>
+
+<script>
+
+let aura = 0;
+
+let historyData = [];
+
+let achievements = [];
+
+let profile = {
+  name:"Гость",
+  avatar:"🐱"
+};
+
+let soundEnabled = true;
+
+let vibrationEnabled = true;
+
+let chart;
+
+const avatars = [
+  "🐱","🦊","🐼","🐸",
+  "🦁","🐵","🐨","🐻"
+];
+
+const quickActions = [
+
+["Погладил кота",8],
+["Помог другу",7],
+["Позвонил маме",9],
+["Сделал зарядку",6],
+
+["Скроллил ленту",-5],
+["Нагрубил",-7],
+["Проспал",-4],
+["Тревожился",-6]
+
+];
+
+const achievementList = [
+
+{
+  id:1,
+  title:"🌱 Начало",
+  desc:"Первое действие"
+},
+
+{
+  id:5,
+  title:"⚡ На волне",
+  desc:"5 действий"
+},
+
+{
+  id:15,
+  title:"🔥 Машина ауры",
+  desc:"15 действий"
+}
+
+];
+function saveData(){
+
+localStorage.setItem(
+  "aura67_data",
+
+JSON.stringify({
+
+aura,
+historyData,
+achievements,
+profile,
+soundEnabled,
+vibrationEnabled
+
+})
+
+);
+
+}
+
+function loadData(){
+
+const data =
+JSON.parse(
+localStorage.getItem(
+"aura67_data"
+)
+);
+
+if(!data)return;
+
+aura =
+data.aura || 0;
+
+historyData =
+data.historyData || [];
+
+achievements =
+data.achievements || [];
+
+profile =
+data.profile || profile;
+
+soundEnabled =
+data.soundEnabled !== false;
+
+vibrationEnabled =
+data.vibrationEnabled !== false;
+
+}
+
+function updateUI(){
+
+document.getElementById(
+"aura"
+).innerText = aura;
+
+document.getElementById(
+"header-avatar"
+).innerText =
+profile.avatar;
+
+document.getElementById(
+"profile-avatar-big"
+).innerText =
+profile.avatar;
+
+document.getElementById(
+"header-name"
+).innerText =
+profile.name;
+
+document.getElementById(
+"profile-name-big"
+).innerText =
+profile.name;
+
+drawHistory();
+
+drawAchievements();
+
+drawQuick();
+
+updateButtons();
+
+saveData();
+
+}
+
+function drawQuick(){
+
+const quick =
+document.getElementById(
+"quick"
+);
+
+quick.innerHTML = "";
+
+quickActions.forEach(a=>{
+
+const btn =
+document.createElement(
+"button"
+);
+
+btn.className =
+"glass card";
+
+btn.style.padding =
+"16px";
+
+btn.style.borderRadius =
+"20px";
+
+btn.style.color =
+"white";
+
+btn.innerHTML = `
+
+<div
+style="
+font-size:15px;
+margin-bottom:6px;
+"
+>
+
+${a[0]}
+
+</div>
+
+<div
+style="
+font-size:24px;
+font-weight:900;
+color:
+${a[1]>=0
+?"#4ade80"
+:"#f87171"};
+"
+>
+
+${a[1]>=0?"+":""}${a[1]}
+
+</div>
+
+`;
+
+btn.onclick = ()=>{
+
+addAura(
+a[0],
+a[1]
+);
+
+};
+
+quick.appendChild(btn);
+
+});
+
+}
+
+function addAura(
+text,
+value
+){
+
+aura += value;
+
+historyData.unshift({
+
+text,
+value,
+time:
+new Date()
+.toLocaleTimeString()
+
+});
+
+if(aura < 0)
+aura = 0;
+
+if(aura > 100)
+aura = 100;
+
+if(soundEnabled){
+
+const audio =
+new Audio(
+value>=0
+?
+"https://actions.google.com/sounds/v1/cartoon/clang_and_wobble.ogg"
+:
+"https://actions.google.com/sounds/v1/cartoon/wood_plank_flicks.ogg"
+);
+
+audio.volume = .4;
+
+audio.play();
+
+}
+
+if(vibrationEnabled){
+
+navigator.vibrate(
+value>=0
+?
+80
+:
+[120,50,120]
+);
+
+}
+
+checkAchievements();
+
+updateUI();
+
+drawChart();
+
+}
+function handleAddAction(){
+
+const input =
+document.getElementById(
+"input"
+);
+
+const text =
+input.value.trim();
+
+if(!text)return;
+
+addAura(text,3);
+
+input.value = "";
+
+}
+
+function drawHistory(){
+
+const box =
+document.getElementById(
+"history-list"
+);
+
+box.innerHTML = "";
+
+if(historyData.length===0){
+
+box.innerHTML = `
+
+<div
+style="
+opacity:.5;
+text-align:center;
+padding:20px;
+"
+>
+
+История пуста
+
+</div>
+
+`;
+
+return;
+
+}
+
+historyData.forEach(h=>{
+
+const div =
+document.createElement(
+"div"
+);
+
+div.className =
+"glass history-item";
+
+div.innerHTML = `
+
+<div>
+
+<div
+style="
+font-weight:700;
+margin-bottom:4px;
+"
+>
+
+${h.text}
+
+</div>
+
+<div
+style="
+opacity:.5;
+font-size:12px;
+"
+>
+
+${h.time}
+
+</div>
+
+</div>
+
+<div
+style="
+font-size:22px;
+font-weight:900;
+color:
+${h.value>=0
+?"#4ade80"
+:"#f87171"};
+"
+>
+
+${h.value>=0?"+":""}${h.value}
+
+</div>
+
+`;
+
+box.appendChild(div);
+
+});
+
+}
+
+function clearHistory(){
+
+historyData = [];
+
+updateUI();
+
+drawChart();
+
+}
+
+function drawAchievements(){
+
+const box =
+document.getElementById(
+"achievements-list"
+);
+
+box.innerHTML = "";
+
+achievementList.forEach(a=>{
+
+const unlocked =
+achievements.includes(
+a.id
+);
+
+const div =
+document.createElement(
+"div"
+);
+
+div.className =
+"glass";
+
+div.style.padding =
+"16px";
+
+div.style.borderRadius =
+"20px";
+
+div.style.marginBottom =
+"10px";
+
+div.innerHTML = `
+
+<div
+style="
+font-size:20px;
+font-weight:800;
+margin-bottom:4px;
+"
+>
+
+${unlocked?"🏆":"🔒"}
+${a.title}
+
+</div>
+
+<div
+style="
+opacity:.6;
+font-size:14px;
+"
+>
+
+${a.desc}
+
+</div>
+
+`;
+
+box.appendChild(div);
+
+});
+
+}
+
+function checkAchievements(){
+
+achievementList.forEach(a=>{
+
+if(
+historyData.length >= a.id &&
+!achievements.includes(a.id)
+){
+
+achievements.push(a.id);
+
+if(soundEnabled){
+
+const audio =
+new Audio(
+"https://actions.google.com/sounds/v1/cartoon/concussive_hit_guitar_boing.ogg"
+);
+
+audio.play();
+
+}
+
+}
+
+});
+
+}
+
+function drawChart(){
+
+const ctx =
+document.getElementById(
+"chart"
+);
+
+if(chart)
+chart.destroy();
+
+chart =
+new Chart(ctx,{
+
+type:"line",
+
+data:{
+
+labels:
+historyData.map(
+(_,i)=>i+1
+),
+
+datasets:[{
+
+label:"Аура",
+
+data:
+historyData.map(
+h=>h.value
+),
+
+borderColor:"#c084fc",
+
+backgroundColor:
+"rgba(192,132,252,.2)",
+
+tension:.4,
+
+fill:true
+
+}]
+
+},
+
+options:{
+
+responsive:true,
+
+plugins:{
+legend:{
+labels:{
+color:"white"
+}
+}
+},
+
+scales:{
+
+x:{
+ticks:{
+color:"white"
+}
+},
+
+y:{
+ticks:{
+color:"white"
+}
+}
+
+}
+
+}
+
+});
+
+}
+
+function switchTab(tab){
+
+[
+"main",
+"history",
+"achievements",
+"chart",
+"profile"
+]
+
+.forEach(v=>{
+
+document
+.getElementById(
+`view-${v}`
+)
+.classList.add(
+"hidden"
+);
+
+document
+.getElementById(
+`tab-${v}`
+)
+.classList.remove(
+"tab-active"
+);
+
+});
+
+document
+.getElementById(
+`view-${tab}`
+)
+.classList.remove(
+"hidden"
+);
+
+document
+.getElementById(
+`tab-${tab}`
+)
+.classList.add(
+"tab-active"
+);
+
+if(tab==="chart"){
+
+setTimeout(
+drawChart,
+100
+);
+
+}
+
+}
+
+function openProfileModal(){
+
+document
+.getElementById(
+"profile-modal"
+)
+.classList.remove(
+"hidden"
+);
+
+document
+.getElementById(
+"profile-name-input"
+)
+.value =
+profile.name;
+
+drawAvatars();
+
+}
+
+function closeProfileModal(){
+
+document
+.getElementById(
+"profile-modal"
+)
+.classList.add(
+"hidden"
+);
+
+}
+
+function drawAvatars(){
+
+const grid =
+document.getElementById(
+"avatar-grid"
+);
+
+grid.innerHTML = "";
+
+avatars.forEach(a=>{
+
+const btn =
+document.createElement(
+"button"
+);
+
+btn.className =
+`
+avatar-btn
+${profile.avatar===a
+?"selected-avatar"
+:""}
+`;
+
+btn.innerText = a;
+
+btn.onclick = ()=>{
+
+profile.avatar = a;
+
+drawAvatars();
+
+};
+
+grid.appendChild(btn);
+
+});
+
+}
+
+function saveProfile(){
+
+const val =
+document
+.getElementById(
+"profile-name-input"
+)
+.value
+.trim();
+
+if(val){
+
+profile.name = val;
+
+}
+
+closeProfileModal();
+
+updateUI();
+
+}
+
+function toggleSound(){
+
+soundEnabled =
+!soundEnabled;
+
+updateButtons();
+
+saveData();
+
+}
+
+function toggleVibration(){
+
+vibrationEnabled =
+!vibrationEnabled;
+
+updateButtons();
+
+saveData();
+
+}
+
+function updateButtons(){
+
+document
+.getElementById(
+"sound-btn"
+)
+.innerText =
+soundEnabled
+?
+"ON"
+:
+"OFF";
+
+document
+.getElementById(
+"vibration-btn"
+)
+.innerText =
+vibrationEnabled
+?
+"ON"
+:
+"OFF";
+
+}
+
+function resetAura(){
+
+aura = 0;
+
+updateUI();
+
+drawChart();
+
+}
+
+function resetAll(){
+
+aura = 0;
+
+historyData = [];
+
+achievements = [];
+
+updateUI();
+
+drawChart();
+
+}
+
+loadData();
+
+updateUI();
+
+switchTab("main");
+
+</script>
+
+</body>
+</html>
