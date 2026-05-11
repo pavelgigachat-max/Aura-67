@@ -1,0 +1,659 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta
+  name="viewport"
+  content="width=device-width,initial-scale=1.0"
+>
+
+<title>Аура 67</title>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script type="module">
+
+import { initializeApp }
+from "https://www.gstatic.com/firebasejs/12.13.0/firebase-app.js";
+
+import {
+  getAuth,
+  signInAnonymously,
+  signInWithEmailAndPassword,
+  createUserWithEmailAndPassword,
+  sendPasswordResetEmail,
+  signOut
+}
+from "https://www.gstatic.com/firebasejs/12.13.0/firebase-auth.js";
+
+const firebaseConfig = {
+
+  apiKey: "AIzaSyArkszrUDF5udpBEMMNJQ3-Mh2fdCyHpRc",
+
+  authDomain: "aura-67.firebaseapp.com",
+
+  projectId: "aura-67",
+
+  storageBucket: "aura-67.firebasestorage.app",
+
+  messagingSenderId: "939057782046",
+
+  appId: "1:939057782046:web:d34b32e0f176372f767d0f"
+
+};
+
+const app = initializeApp(firebaseConfig);
+
+window.auth = getAuth(app);
+
+window.signInAnonymously =
+  signInAnonymously;
+
+window.signInWithEmailAndPassword =
+  signInWithEmailAndPassword;
+
+window.createUserWithEmailAndPassword =
+  createUserWithEmailAndPassword;
+
+window.sendPasswordResetEmail =
+  sendPasswordResetEmail;
+
+window.signOut = signOut;
+
+</script>
+
+<style>
+
+body{
+
+  margin:0;
+  padding:20px;
+
+  background:#0f172a;
+
+  color:white;
+
+  font-family:Arial;
+}
+
+.hidden{
+  display:none;
+}
+
+.box{
+
+  background:#1e293b;
+
+  padding:20px;
+
+  border-radius:20px;
+
+  margin-bottom:20px;
+}
+
+input{
+
+  width:100%;
+
+  padding:14px;
+
+  border:none;
+
+  border-radius:12px;
+
+  margin-bottom:12px;
+
+  box-sizing:border-box;
+}
+
+button{
+
+  width:100%;
+
+  padding:14px;
+
+  border:none;
+
+  border-radius:12px;
+
+  cursor:pointer;
+
+  margin-bottom:10px;
+
+  font-weight:bold;
+}
+
+.main-btn{
+
+  background:#a855f7;
+
+  color:white;
+}
+
+.secondary-btn{
+
+  background:#334155;
+
+  color:white;
+}
+
+#error{
+
+  color:#f87171;
+
+  margin-top:10px;
+}
+
+#aura{
+
+  font-size:72px;
+
+  text-align:center;
+
+  font-weight:bold;
+}
+
+canvas{
+
+  background:#111827;
+
+  border-radius:20px;
+
+  padding:10px;
+}
+
+</style>
+
+</head>
+
+<body>
+  <div id="auth-box" class="box">
+
+<h2 id="auth-title">
+Вход
+</h2>
+
+<input
+  id="email"
+  type="email"
+  placeholder="Email"
+>
+
+<input
+  id="password"
+  type="password"
+  placeholder="Пароль"
+>
+
+<button
+  class="main-btn"
+  onclick="handleAuth()"
+>
+Войти
+</button>
+
+<button
+  class="secondary-btn"
+  onclick="switchMode()"
+>
+Переключить вход / регистрация
+</button>
+
+<button
+  class="secondary-btn"
+  onclick="guestLogin()"
+>
+Войти как гость
+</button>
+
+<button
+  class="secondary-btn"
+  onclick="resetPassword()"
+>
+Сброс пароля
+</button>
+
+<div id="error"></div>
+
+</div>
+
+<div id="app" class="hidden">
+
+<div class="box">
+
+<h2>
+Аура 67
+</h2>
+
+<div id="aura">
+0
+</div>
+
+</div>
+
+<div class="box">
+
+<input
+  id="action-input"
+  placeholder="Введите действие"
+>
+
+<button
+  class="main-btn"
+  onclick="addAction()"
+>
+Добавить действие
+</button>
+
+</div>
+
+<div class="box">
+
+<canvas id="chart"></canvas>
+
+</div>
+
+<div class="box">
+
+<div id="history"></div>
+
+</div>
+
+<div class="box">
+
+<button
+  class="secondary-btn"
+  onclick="logout()"
+>
+Выйти
+</button>
+
+</div>
+
+</div>
+<script>
+
+let mode = "login";
+
+let aura = 0;
+
+let actions = [];
+
+let chart = null;
+
+function save(){
+
+  localStorage.setItem(
+    "aura67",
+    JSON.stringify({
+      aura,
+      actions
+    })
+  );
+}
+
+function load(){
+
+  let data =
+    localStorage.getItem("aura67");
+
+  if(!data) return;
+
+  data = JSON.parse(data);
+
+  aura = data.aura || 0;
+
+  actions = data.actions || [];
+}
+
+function updateUI(){
+
+  document.getElementById("aura")
+    .textContent = aura;
+
+  renderHistory();
+
+  updateChart();
+}
+
+function renderHistory(){
+
+  let el =
+    document.getElementById("history");
+
+  el.innerHTML = "";
+
+  actions
+    .slice()
+    .reverse()
+    .forEach(function(item){
+
+      let div =
+        document.createElement("div");
+
+      div.className = "box";
+
+      div.innerHTML =
+        "<b>" +
+        item.text +
+        "</b><br><br>" +
+        "Аура: " +
+        item.value;
+
+      el.appendChild(div);
+
+    });
+}
+
+function addAction(){
+
+  let input =
+    document.getElementById(
+      "action-input"
+    );
+
+  let text = input.value.trim();
+
+  if(!text) return;
+
+  let value =
+    Math.floor(Math.random()*20)+1;
+
+  aura += value;
+
+  actions.push({
+
+    text:text,
+
+    value:value
+
+  });
+
+  input.value = "";
+
+  save();
+
+  updateUI();
+}
+function initChart(){
+
+  let ctx =
+    document.getElementById("chart");
+
+  if(!ctx) return;
+
+  chart = new Chart(ctx, {
+
+    type:"line",
+
+    data:{
+
+      labels: actions.map(function(_,i){
+
+        return i + 1;
+
+      }),
+
+      datasets:[{
+
+        label:"Аура",
+
+        data: actions.map(function(x){
+
+          return x.value;
+
+        }),
+
+        tension:0.3
+
+      }]
+    },
+
+    options:{
+
+      responsive:true
+    }
+  });
+}
+
+function updateChart(){
+
+  if(!chart){
+
+    initChart();
+
+    return;
+  }
+
+  chart.data.labels =
+    actions.map(function(_,i){
+
+      return i + 1;
+
+    });
+
+  chart.data.datasets[0].data =
+    actions.map(function(x){
+
+      return x.value;
+
+    });
+
+  chart.update();
+}
+
+function showError(text){
+
+  document.getElementById(
+    "error"
+  ).textContent = text;
+}
+
+function clearError(){
+
+  document.getElementById(
+    "error"
+  ).textContent = "";
+}
+async function handleAuth(){
+
+  clearError();
+
+  let email =
+    document.getElementById(
+      "email"
+    ).value.trim();
+
+  let password =
+    document.getElementById(
+      "password"
+    ).value.trim();
+
+  if(!email || !password){
+
+    showError("Заполните поля");
+
+    return;
+  }
+
+  try{
+
+    if(mode === "register"){
+
+      await window
+      .createUserWithEmailAndPassword(
+        window.auth,
+        email,
+        password
+      );
+
+    }else{
+
+      await window
+      .signInWithEmailAndPassword(
+        window.auth,
+        email,
+        password
+      );
+    }
+
+    document
+      .getElementById("auth-box")
+      .classList.add("hidden");
+
+    document
+      .getElementById("app")
+      .classList.remove("hidden");
+
+    updateUI();
+
+  }catch(e){
+
+    console.log(e);
+
+    showError(e.message);
+  }
+}
+
+function switchMode(){
+
+  if(mode === "login"){
+
+    mode = "register";
+
+    document
+      .getElementById("auth-title")
+      .textContent =
+      "Регистрация";
+
+  }else{
+
+    mode = "login";
+
+    document
+      .getElementById("auth-title")
+      .textContent =
+      "Вход";
+  }
+
+  clearError();
+}
+
+async function guestLogin(){
+
+  clearError();
+
+  try{
+
+    await window
+      .signInAnonymously(
+        window.auth
+      );
+
+    document
+      .getElementById("auth-box")
+      .classList.add("hidden");
+
+    document
+      .getElementById("app")
+      .classList.remove("hidden");
+
+    updateUI();
+
+  }catch(e){
+
+    console.log(e);
+
+    showError(e.message);
+  }
+}
+
+async function logout(){
+
+  await window.signOut(
+    window.auth
+  );
+
+  document
+    .getElementById("auth-box")
+    .classList.remove("hidden");
+
+  document
+    .getElementById("app")
+    .classList.add("hidden");
+}
+async function resetPassword(){
+
+  clearError();
+
+  let email =
+    document.getElementById(
+      "email"
+    ).value.trim();
+
+  if(!email){
+
+    showError(
+      "Введите email"
+    );
+
+    return;
+  }
+
+  try{
+
+    await window
+      .sendPasswordResetEmail(
+        window.auth,
+        email
+      );
+
+    alert(
+      "Письмо отправлено"
+    );
+
+  }catch(e){
+
+    console.log(e);
+
+    showError(e.message);
+  }
+}
+
+window.onerror = function(
+  msg,
+  src,
+  line,
+  col,
+  err
+){
+
+  console.log(
+    "ERROR:",
+    msg,
+    line
+  );
+};
+
+load();
+
+updateUI();
+window.handleAuth = handleAuth;
+
+window.switchMode = switchMode;
+
+window.guestLogin = guestLogin;
+
+window.logout = logout;
+
+window.resetPassword = resetPassword;
+
+window.addAction = addAction;
+</script>
+
+</body>
+
+</html>
